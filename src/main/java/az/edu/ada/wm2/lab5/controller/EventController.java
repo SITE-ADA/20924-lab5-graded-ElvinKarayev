@@ -86,17 +86,30 @@ public class EventController {
     }
 
     // 6. PARTIAL UPDATE (PATCH) - PATCH /api/events/{id}
-    @PatchMapping("/{id}")
-    public ResponseEntity<Event> partialUpdateEvent(@PathVariable UUID id, @RequestBody Event partialEvent) {
-        try {
-            Event updatedEvent = eventService.partialUpdateEvent(id, partialEvent);
-            return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @PatchMapping("/{id}/price")
+        public ResponseEntity<Event> updateEventPrice(
+                @PathVariable UUID id,
+                @RequestParam(required = false) BigDecimal price) {
+
+            // price param missing → 400
+            if (price == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            // negative price → 400 (ZERO must be allowed)
+            if (price.compareTo(BigDecimal.ZERO) < 0) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            try {
+                Event updatedEvent = eventService.updateEventPrice(id, price);
+                return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
+            } catch (RuntimeException e) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         }
-    }
     //7
     @GetMapping("/filter/date")
     public ResponseEntity<List<Event>> getEventsByDateRange(
