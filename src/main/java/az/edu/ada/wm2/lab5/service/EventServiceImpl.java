@@ -85,27 +85,63 @@ public class EventServiceImpl implements EventService {
     // Custom methods
     @Override
     public List<Event> getEventsByTag(String tag) {
-        return List.of();
+        
+        if (tag == null || tag.isBlank()) {
+            return List.of();
+        }
+        return eventRepository.findAll().stream()
+                                        .filter(event -> event.getTags().stream().anyMatch(t ->t.equalsIgnoreCase(tag))).toList();
     }
 
     @Override
     public List<Event> getUpcomingEvents() {
-        return List.of();
+        LocalDateTime now = LocalDateTime.now();
+
+        return eventRepository.findAll()
+                .stream()
+                .filter(event -> event.getEventDateTime().isAfter(now))
+                .toList();
     }
 
     @Override
     public List<Event> getEventsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-       return List.of();
+        if (minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("minPrice must not be negative");
+        }
+        if (minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException("minPrice must not be greater than maxPrice");
+        }
+
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getTicketPrice() != null &&
+                        event.getTicketPrice().compareTo(minPrice) >= 0 &&
+                        event.getTicketPrice().compareTo(maxPrice) <= 0)
+                .toList();
     }
 
     @Override
     public List<Event> getEventsByDateRange(LocalDateTime start, LocalDateTime end) {
-        return List.of();
+        if (start.isAfter(end)) {
+            throw new IllegalArgumentException("start must not be after end");
+        }
+
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getEventDateTime() != null &&
+                        !event.getEventDateTime().isBefore(start) &&
+                        !event.getEventDateTime().isAfter(end)).toList();
     }
 
     @Override
     public Event updateEventPrice(UUID id, BigDecimal newPrice) {
-        return null;
+        if (newPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("new price must not be negative");
+        }
+
+        Event existingEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+
+        existingEvent.setTicketPrice(newPrice);
+        return eventRepository.save(existingEvent);
     }
 
 }
