@@ -122,7 +122,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getEventsByDateRange(LocalDateTime start, LocalDateTime end) {
         if (start.isAfter(end)) {
-            throw new Exception("start must not be after end");
+            throw new IllegalArgumentException("start must not be after end");
         }
 
         return eventRepository.findAll().stream()
