@@ -106,10 +106,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getEventsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         if (minPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new Exception("minPrice must not be negative");
+            throw new IllegalArgumentException("minPrice must not be negative");
         }
         if (minPrice.compareTo(maxPrice) > 0) {
-            throw new Exception("minPrice must not be greater than maxPrice");
+            throw new IllegalArgumentException("minPrice must not be greater than maxPrice");
         }
 
         return eventRepository.findAll().stream()
@@ -134,7 +134,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event updateEventPrice(UUID id, BigDecimal newPrice) {
         if (newPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new Exception("new price must not be negative");
+            throw new IllegalArgumentException("new price must not be negative");
         }
 
         Event existingEvent = eventRepository.findById(id)
