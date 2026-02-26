@@ -128,7 +128,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAll().stream()
                 .filter(event -> event.getEventDateTime() != null &&
                         !event.getEventDateTime().isBefore(start) &&
-                        !event.getEventDateTime().isAfter(end)).toList()
+                        !event.getEventDateTime().isAfter(end)).toList();
     }
 
     @Override
