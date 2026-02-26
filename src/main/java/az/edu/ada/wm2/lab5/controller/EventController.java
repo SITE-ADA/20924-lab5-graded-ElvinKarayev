@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -100,11 +101,11 @@ public class EventController {
     @GetMapping("/filter/date")
     public ResponseEntity<List<Event>> getEventsByDateRange(
             @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            @DateTimeFormat(iso = DateTimeFormatter.ISO_DATE_TIME)
             LocalDateTime start,
 
             @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            @DateTimeFormat(iso = DateTimeFormatter.ISO_DATE_TIME)
             LocalDateTime end) {
 
         try {
